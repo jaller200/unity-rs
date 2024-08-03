@@ -200,6 +200,10 @@ impl<'a> FromObject<'a> for Texture2D {
         if version[0] >= 3 && (version[0] < 5 || (version[0] == 5 && version[1] <= 4)) {
             let _read_allowed = r.read_bool()?;
         }
+        if version[0] >= 2022 {
+            let _mip_map_limit_group_name = r.read_aligned_string();
+            println!("{:?}", _mip_map_limit_group_name);
+        }
         if version[0] > 2018 || (version[0] == 2018 && version[1] >= 2) {
             let _streaming_mip_maps = r.read_bool()?;
         }
