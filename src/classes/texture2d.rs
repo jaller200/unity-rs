@@ -175,12 +175,24 @@ impl FromObject<'_> for Texture2D {
             ..Self::default()
         };
         let version = &object.info.version;
+        // if version[0] > 2017 || (version[0] == 2017 && version[1] >= 3) {
+        //     result.forced_fallback_format = r.read_i32()?;
+        //     result.downscale_fallback = r.read_bool()?;
+        //     if version[0] > 2020 || (version[0] == 2020 && version[1] >= 2) {
+        //         let _is_alpha_channel_optional = r.read_bool()?;
+        //     }
+        //     r.align(4)?;
+        // }
         if version[0] > 2017 || (version[0] == 2017 && version[1] >= 3) {
-            result.forced_fallback_format = r.read_i32()?;
-            result.downscale_fallback = r.read_bool()?;
+            if version[0] < 2023 || (version[0] == 2023 && version[1] < 2) {
+                result.forced_fallback_format = r.read_i32()?;
+                result.downscale_fallback = r.read_bool()?;
+            }
+
             if version[0] > 2020 || (version[0] == 2020 && version[1] >= 2) {
                 let _is_alpha_channel_optional = r.read_bool()?;
             }
+
             r.align(4)?;
         }
         result.width = r.read_i32()?;
