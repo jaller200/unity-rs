@@ -202,19 +202,32 @@ impl FromObject<'_> for Texture2D {
         if version[0] >= 2020 {
             let _is_pre_processed = r.read_bool()?;
         }
+        // if version[0] > 2019 || (version[0] == 2019 && version[1] >= 3) {
+        //     let _is_ignore_master_texture_limit = r.read_bool()?;
+        // }
+        // if version[0] >= 2022 && version[1] >= 2 {
+        //     r.align(4)?;
+        //     let _mipmap_limit_group_name = r.read_aligned_string();
+        // }
+        // if version[0] >= 3 && (version[0] < 5 || (version[0] == 5 && version[1] <= 4)) {
+        //     let _read_allowed = r.read_bool()?;
+        // }
+        // if version[0] >= 2022 {
+        //     let _mip_map_limit_group_name = r.read_aligned_string();
+        //     println!("{:?}", _mip_map_limit_group_name);
+        // }
+        let has_minmap_limit_group = version[0] > 2022 || (version[0] == 2022 && version[1] >= 2);
         if version[0] > 2019 || (version[0] == 2019 && version[1] >= 3) {
             let _is_ignore_master_texture_limit = r.read_bool()?;
-        }
-        if version[0] >= 2022 && version[1] >= 2 {
-            r.align(4)?;
-            let _mipmap_limit_group_name = r.read_aligned_string();
+            if has_minmap_limit_group {
+                r.align(4)?;
+            }
         }
         if version[0] >= 3 && (version[0] < 5 || (version[0] == 5 && version[1] <= 4)) {
             let _read_allowed = r.read_bool()?;
         }
-        if version[0] >= 2022 {
-            let _mip_map_limit_group_name = r.read_aligned_string();
-            println!("{:?}", _mip_map_limit_group_name);
+        if has_minmap_limit_group {
+            let _minmap_limit_group_name = r.read_aligned_string()?;
         }
         if version[0] > 2018 || (version[0] == 2018 && version[1] >= 2) {
             let _streaming_mip_maps = r.read_bool()?;
